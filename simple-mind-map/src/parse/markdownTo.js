@@ -1,5 +1,20 @@
 import { fromMarkdown } from 'mdast-util-from-markdown'
 
+const getNodeText = node => {
+  if (node.type === 'list') return ''
+  let textStr = ''
+
+  ;(node.children || []).forEach(item => {
+    if (['inlineCode', 'text'].includes(item.type)) {
+      textStr += item.value || ''
+    } else {
+      textStr += getNodeText(item)
+    }
+  })
+
+  return textStr
+}
+
 // 处理list的情况
 const handleList = node => {
   let list = []
@@ -9,7 +24,7 @@ const handleList = node => {
       let node = {}
       node.data = {
         // 节点内容
-        text: cur.children[0].children[0].value
+        text: getNodeText(cur)
       }
       node.children = []
       newArr.push(node)
@@ -45,7 +60,7 @@ export const transformMarkdownTo = md => {
       let node = {}
       node.data = {
         // 节点内容
-        text: cur.children[0].value
+        text: getNodeText(cur)
       }
       node.children = []
       // 如果当前的层级大于上一个节点的层级，那么是其子节点

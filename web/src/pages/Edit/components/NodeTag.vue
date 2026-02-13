@@ -24,7 +24,7 @@
           backgroundColor: generateColorByContent(item)
         }"
       >
-        {{ item }}
+        {{ typeof item === 'string' ? item : item.text }}
         <div class="delBtn" @click="del(index)">
           <span class="iconfont iconshanchu"></span>
         </div>
@@ -40,15 +40,13 @@
 </template>
 
 <script>
-import { generateColorByContent, isMobile } from 'simple-mind-map/src/utils/index'
+import {
+  generateColorByContent,
+  isMobile
+} from 'simple-mind-map/src/utils/index'
 
-/**
- * @Author: 王林
- * @Date: 2021-06-24 22:54:03
- * @Desc: 节点标签内容设置
- */
+// 节点标签内容设置
 export default {
-  name: 'NodeTag',
   data() {
     return {
       dialogVisible: false,
@@ -57,6 +55,13 @@ export default {
       activeNodes: [],
       max: 5,
       isMobile: isMobile()
+    }
+  },
+  watch: {
+    dialogVisible(val, oldVal) {
+      if (!val && oldVal) {
+        this.$bus.$emit('endTextEdit')
+      }
     }
   },
   created() {
@@ -86,40 +91,21 @@ export default {
       this.dialogVisible = true
     },
 
-    /**
-     * @Author: 王林
-     * @Date: 2021-06-24 21:48:14
-     * @Desc: 添加
-     */
     add() {
-      this.tagArr.push(this.tag)
+      const text = this.tag.trim()
+      if (!text) return
+      this.tagArr.push(text)
       this.tag = ''
     },
 
-    /**
-     * @Author: 王林
-     * @Date: 2021-06-24 21:57:53
-     * @Desc: 删除
-     */
     del(index) {
       this.tagArr.splice(index, 1)
     },
 
-    /**
-     * @Author: 王林
-     * @Date: 2021-06-22 22:08:11
-     * @Desc: 取消
-     */
     cancel() {
       this.dialogVisible = false
-      this.$bus.$emit('endTextEdit')
     },
 
-    /**
-     * @Author: 王林
-     * @Date: 2021-06-06 22:28:20
-     * @Desc:  确定
-     */
     confirm() {
       this.activeNodes.forEach(node => {
         node.setTag(this.tagArr)

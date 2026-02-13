@@ -20,17 +20,12 @@
 </template>
 
 <script>
-import Sidebar from './Sidebar'
+import Sidebar from './Sidebar.vue'
 import { shortcutKeyList } from '@/config'
 import { mapState } from 'vuex'
 
-/**
- * @Author: 王林
- * @Date: 2021-06-24 22:54:14
- * @Desc: 快捷键
- */
+// 快捷键
 export default {
-  name: 'ShortcutKey',
   components: {
     Sidebar
   },
@@ -38,7 +33,10 @@ export default {
     return {}
   },
   computed: {
-    ...mapState(['activeSidebar', 'isDark']),
+    ...mapState({
+      isDark: state => state.localConfig.isDark,
+      activeSidebar: state => state.activeSidebar
+    }),
 
     shortcutKeyList() {
       return shortcutKeyList[this.$i18n.locale] || shortcutKeyList.zh

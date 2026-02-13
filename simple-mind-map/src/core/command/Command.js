@@ -6,6 +6,7 @@ import {
   transformTreeDataToObject
 } from '../../utils'
 import { ERROR_TYPES } from '../../constants/constant'
+import pkg from '../../../package.json'
 
 //  命令类
 class Command {
@@ -14,15 +15,28 @@ class Command {
     this.opt = opt
     this.mindMap = opt.mindMap
     this.commands = {}
-    this.history = []
+    this.history = [] // 字符串形式存储
     this.activeHistoryIndex = 0
     // 注册快捷键
     this.registerShortcutKeys()
+    this.originAddHistory = this.addHistory.bind(this)
     this.addHistory = throttle(
       this.addHistory,
       this.mindMap.opt.addHistoryTime,
       this
     )
+    // 是否暂停收集历史数据
+    this.isPause = false
+  }
+
+  // 暂停收集历史数据
+  pause() {
+    this.isPause = true
+  }
+
+  // 恢复收集历史数据
+  recovery() {
+    this.isPause = false
   }
 
   //  清空历史数据
@@ -48,6 +62,7 @@ class Command {
       this.commands[name].forEach(fn => {
         fn(...args)
       })
+      this.mindMap.emit('afterExecCommand', name, ...args)
       if (
         ['BACK', 'FORWARD', 'SET_NODE_ACTIVE', 'CLEAR_ACTIVE_NODE'].includes(
           name
@@ -88,20 +103,22 @@ class Command {
 
   //  添加回退数据
   addHistory() {
-    if (this.mindMap.opt.readonly) {
+    if (this.mindMap.opt.readonly || this.isPause) {
       return
     }
-    const lastData =
-      this.history.length > 0 ? this.history[this.history.length - 1] : null
+    this.mindMap.emit('beforeAddHistory')
+    const lastDataStr =
+      this.history.length > 0 ? this.history[this.activeHistoryIndex] : null
     const data = this.getCopyData()
+    const dataStr = JSON.stringify(data)
     // 此次数据和上次一样则不重复添加
-    if (lastData && JSON.stringify(lastData) === JSON.stringify(data)) {
+    if (lastDataStr && lastDataStr === dataStr) {
       return
     }
-    this.emitDataUpdatesEvent(lastData, data)
+    this.emitDataUpdatesEvent(lastDataStr, dataStr)
     // 删除当前历史指针后面的数据
     this.history = this.history.slice(0, this.activeHistoryIndex + 1)
-    this.history.push(simpleDeepClone(data))
+    this.history.push(dataStr)
     // 历史记录数超过最大数量
     if (this.history.length > this.mindMap.opt.maxHistoryCount) {
       this.history.shift()
@@ -121,16 +138,16 @@ class Command {
       return
     }
     if (this.activeHistoryIndex - step >= 0) {
-      const lastData = this.history[this.activeHistoryIndex]
+      const lastDataStr = this.history[this.activeHistoryIndex]
       this.activeHistoryIndex -= step
       this.mindMap.emit(
         'back_forward',
         this.activeHistoryIndex,
         this.history.length
       )
-      const data = simpleDeepClone(this.history[this.activeHistoryIndex])
-      this.emitDataUpdatesEvent(lastData, data)
-      this.mindMap.emit('data_change', data)
+      const dataStr = this.history[this.activeHistoryIndex]
+      const data = JSON.parse(dataStr)
+      this.emitDataUpdatesEvent(lastDataStr, dataStr)
       return data
     }
   }
@@ -142,23 +159,26 @@ class Command {
     }
     let len = this.history.length
     if (this.activeHistoryIndex + step <= len - 1) {
-      const lastData = this.history[this.activeHistoryIndex]
+      const lastDataStr = this.history[this.activeHistoryIndex]
       this.activeHistoryIndex += step
       this.mindMap.emit(
         'back_forward',
         this.activeHistoryIndex,
         this.history.length
       )
-      const data = simpleDeepClone(this.history[this.activeHistoryIndex])
-      this.emitDataUpdatesEvent(lastData, data)
-      this.mindMap.emit('data_change', data)
+      const dataStr = this.history[this.activeHistoryIndex]
+      const data = JSON.parse(dataStr)
+      this.emitDataUpdatesEvent(lastDataStr, dataStr)
       return data
     }
   }
 
   //  获取渲染树数据副本
   getCopyData() {
-    return copyRenderTree({}, this.mindMap.renderer.renderTree, true)
+    if (!this.mindMap.renderer.renderTree) return null
+    const res = copyRenderTree({}, this.mindMap.renderer.renderTree, true)
+    res.smmVersion = pkg.version
+    return res
   }
 
   // 移除节点数据中的uid
@@ -177,12 +197,14 @@ class Command {
   }
 
   // 派发思维导图更新明细事件
-  emitDataUpdatesEvent(lastData, data) {
+  emitDataUpdatesEvent(lastDataStr, dataStr) {
     try {
       // 如果data_change_detail没有监听者，那么不进行计算，节省性能
       const eventName = 'data_change_detail'
       const count = this.mindMap.event.listenerCount(eventName)
-      if (count > 0 && lastData && data) {
+      if (count > 0 && lastDataStr && dataStr) {
+        const lastData = JSON.parse(lastDataStr)
+        const data = JSON.parse(dataStr)
         const lastDataObj = simpleDeepClone(transformTreeDataToObject(lastData))
         const dataObj = simpleDeepClone(transformTreeDataToObject(data))
         const res = []

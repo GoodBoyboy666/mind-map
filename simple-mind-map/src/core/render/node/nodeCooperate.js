@@ -28,7 +28,7 @@ function createTextAvatar(item) {
       color: '#fff'
     })
     .css({
-      'font-size': fontSize
+      'font-size': fontSize + 'px'
     })
     .dx(-fontSize / 2)
     .dy((avatarSize - fontSize) / 2)
@@ -67,6 +67,15 @@ function updateUserListNode() {
     } else {
       node = this.createTextAvatar(item)
     }
+    node.on('click', (e) => {
+      this.mindMap.emit('node_cooperate_avatar_click', item, this, node, e)
+    })
+    node.on('mouseenter', (e) => {
+      this.mindMap.emit('node_cooperate_avatar_mouseenter', item, this, node, e)
+    })
+    node.on('mouseleave', (e) => {
+      this.mindMap.emit('node_cooperate_avatar_mouseleave', item, this, node, e)
+    })
     node.x(index * avatarSize).cy(-avatarSize / 2)
     this._userListGroup.add(node)
   })
@@ -94,11 +103,18 @@ function removeUser(userInfo) {
   this.updateUserListNode()
 }
 
+// 清空用户
+function emptyUser() {
+  this.userList = []
+  this.updateUserListNode()
+}
+
 export default {
   createUserListNode,
   updateUserListNode,
   createTextAvatar,
   createImageAvatar,
   addUser,
-  removeUser
+  removeUser,
+  emptyUser
 }

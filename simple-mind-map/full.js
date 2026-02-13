@@ -15,20 +15,23 @@ import Search from './src/plugins/Search.js'
 import Painter from './src/plugins/Painter.js'
 import Scrollbar from './src/plugins/Scrollbar.js'
 import Formula from './src/plugins/Formula.js'
+import RainbowLines from './src/plugins/RainbowLines.js'
+import Demonstrate from './src/plugins/Demonstrate.js'
+import OuterFrame from './src/plugins/OuterFrame.js'
+import MindMapLayoutPro from './src/plugins/MindMapLayoutPro.js'
+import NodeBase64ImageStorage from './src/plugins/NodeBase64ImageStorage.js'
 import xmind from './src/parse/xmind.js'
 import markdown from './src/parse/markdown.js'
 import icons from './src/svg/icons.js'
 import * as constants from './src/constants/constant.js'
-import themes from './src/themes/index.js'
-import * as defaultTheme from './src/themes/default.js'
+import * as defaultTheme from './src/theme/default.js'
 
 MindMap.xmind = xmind
 MindMap.markdown = markdown
 MindMap.iconList = icons.nodeIconList
 MindMap.constants = constants
-MindMap.themes = themes
 MindMap.defaultTheme = defaultTheme
-MindMap.version = '0.9.7'
+MindMap.version = '0.14.0-fix.1'
 
 MindMap.usePlugin(MiniMap)
   .usePlugin(Watermark)
@@ -46,5 +49,10 @@ MindMap.usePlugin(MiniMap)
   .usePlugin(Painter)
   .usePlugin(Scrollbar)
   .usePlugin(Formula)
+  .usePlugin(RainbowLines)
+  .usePlugin(Demonstrate)
+  .usePlugin(OuterFrame)
+  .usePlugin(MindMapLayoutPro)
+  .usePlugin(NodeBase64ImageStorage)
 
 export default MindMap

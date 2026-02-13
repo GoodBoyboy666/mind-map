@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import Sidebar from './Sidebar'
+import Sidebar from './Sidebar.vue'
 import { mapState } from 'vuex'
 import { nodeIconList } from 'simple-mind-map/src/svg/icons'
 import { mergerIconList } from 'simple-mind-map/src/utils/index'
@@ -63,7 +63,6 @@ import icon from '@/config/icon'
 import image from '@/config/image'
 
 export default {
-  name: 'NodeIconSidebar',
   components: {
     Sidebar
   },
@@ -78,7 +77,10 @@ export default {
     }
   },
   computed: {
-    ...mapState(['activeSidebar', 'isDark'])
+    ...mapState({
+      activeSidebar: state => state.activeSidebar,
+      isDark: state => state.localConfig.isDark
+    })
   },
   watch: {
     activeSidebar(val) {

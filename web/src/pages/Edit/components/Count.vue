@@ -14,15 +14,9 @@
 <script>
 import { mapState } from 'vuex'
 
-/**
- * @Author: 王林
- * @Date: 2021-06-24 22:53:10
- * @Desc: 字数及节点数量统计
- */
-
+// 字数及节点数量统计
 let countEl = document.createElement('div')
 export default {
-  name: 'Count',
   props: {
     mindMap: {
       type: Object
@@ -36,7 +30,9 @@ export default {
     }
   },
   computed: {
-    ...mapState(['isDark']),
+    ...mapState({
+      isDark: state => state.localConfig.isDark
+    })
   },
   created() {
     this.$bus.$on('data_change', this.onDataChange)
@@ -48,11 +44,7 @@ export default {
     this.$bus.$off('data_change', this.onDataChange)
   },
   methods: {
-    /**
-     * @Author: 王林25
-     * @Date: 2022-11-14 19:20:20
-     * @Desc: 监听数据变化
-     */
+    // 监听数据变化
     onDataChange(data) {
       this.textStr = ''
       this.words = 0
@@ -62,12 +54,9 @@ export default {
       this.words = countEl.textContent.length
     },
 
-    /**
-     * @Author: 王林
-     * @Date: 2021-06-30 22:13:07
-     * @Desc: 遍历
-     */
+    // 遍历
     walk(data) {
+      if (!data) return
       this.num++
       this.textStr += String(data.data.text) || ''
       if (data.children && data.children.length > 0) {
@@ -98,7 +87,7 @@ export default {
     background: #262a2e;
 
     .item {
-      color: hsla(0,0%,100%,.6);
+      color: hsla(0, 0%, 100%, 0.6);
     }
   }
 
@@ -116,7 +105,7 @@ export default {
   }
 }
 
-@media screen and (max-width: 740px) {
+@media screen and (max-width: 900px) {
   .countContainer {
     display: none;
   }

@@ -13,3 +13,4 @@ if (fs.existsSync(src)) {
     fs.unlinkSync(src)
 }
 
+// console.warn('请检查付费插件是否启用！！！')

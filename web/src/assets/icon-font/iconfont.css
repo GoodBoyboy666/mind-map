@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 2479351 */
-  src: url('iconfont.woff2?t=1697073602349') format('woff2'),
-       url('iconfont.woff?t=1697073602349') format('woff'),
-       url('iconfont.ttf?t=1697073602349') format('truetype');
+  src: url('iconfont.woff2?t=1739843331607') format('woff2'),
+       url('iconfont.woff?t=1739843331607') format('woff'),
+       url('iconfont.ttf?t=1739843331607') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,74 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.iconAIshengcheng:before {
+  content: "\e6b5";
+}
+
+.iconprinting:before {
+  content: "\ea28";
+}
+
+.iconwenjianjia:before {
+  content: "\e614";
+}
+
+.iconcontentleft:before {
+  content: "\e8c9";
+}
+
+.iconjuzhongduiqi:before {
+  content: "\ec80";
+}
+
+.iconfile-excel:before {
+  content: "\e7b7";
+}
+
+.iconfreemind:before {
+  content: "\e97d";
+}
+
+.iconwaikuang:before {
+  content: "\e640";
+}
+
+.iconhighlight:before {
+  content: "\e6b8";
+}
+
+.iconyanshibofang:before {
+  content: "\e648";
+}
+
+.iconfujian:before {
+  content: "\e88a";
+}
+
+.icongeshihua:before {
+  content: "\e7a3";
+}
+
+.iconyuanma:before {
+  content: "\e658";
+}
+
+.icongundongtiao:before {
+  content: "\e670";
+}
+
+.iconxietongwendang:before {
+  content: "\e60d";
+}
+
+.iconTXT:before {
+  content: "\e6e1";
+}
+
+.iconwenjian1:before {
+  content: "\e69f";
 }
 
 .icondodeparent:before {
